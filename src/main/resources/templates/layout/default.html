@@ -7,6 +7,18 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
+    <header class="top-bar">
+        <div class="top-bar-content">
+            <span class="top-bar-title" th:text="#{app.title}">MyCar Log</span>
+            <div class="lang-switch">
+                <a th:href="@{''(lang='ko')}"
+                   th:classappend="${#locale.language == 'ko'} ? ' active' : ''">KO</a>
+                <a th:href="@{''(lang='en')}"
+                   th:classappend="${#locale.language == 'en'} ? ' active' : ''">EN</a>
+            </div>
+        </div>
+    </header>
+
     <main class="container">
         <div th:replace="${content}"></div>
     </main>

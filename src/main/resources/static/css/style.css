@@ -25,7 +25,71 @@ body {
     color: var(--text-color);
     line-height: 1.6;
     min-height: 100vh;
+    padding-top: 48px;
     padding-bottom: calc(var(--nav-height) + 10px);
+}
+
+/* Top Bar */
+.top-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 48px;
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    z-index: 1000;
+}
+
+.top-bar-content {
+    max-width: 960px;
+    margin: 0 auto;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 0.75rem;
+}
+
+.top-bar-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.lang-switch {
+    display: flex;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.lang-switch a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.3rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-decoration: none;
+    color: var(--text-light);
+    background: var(--card-bg);
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.lang-switch a:first-child {
+    border-right: 1px solid var(--border-color);
+}
+
+.lang-switch a.active {
+    background: var(--primary-color);
+    color: white;
+}
+
+.lang-switch a:hover:not(.active) {
+    background: var(--bg-color);
 }
 
 /* Container */
