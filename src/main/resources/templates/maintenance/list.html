@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{maintenance.title}">Maintenance List</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <main class="container">
+        <div class="page-header">
+            <a th:href="@{'/car/' + ${carId} + '/settings'}" class="back-btn">&larr;</a>
+            <h1 th:text="#{maintenance.title}">Maintenance List</h1>
+        </div>
+
+        <div th:if="${error}" class="card" style="background: #fee; border: 1px solid #e74c3c;">
+            <p th:text="#{${error}}" style="color: #e74c3c; margin: 0;">Error</p>
+        </div>
+
+        <!-- Custom Items -->
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3 class="card-title" th:text="#{maintenance.custom}">Custom Items</h3>
+                <a th:href="@{'/car/' + ${carId} + '/maintenance/add'}" class="btn btn-primary" th:text="#{action.add}">Add</a>
+            </div>
+
+            <div th:if="${customItems.isEmpty()}" class="empty-state" style="padding: 2rem 0;">
+                <p th:text="#{expense.empty}">No items</p>
+            </div>
+
+            <ul th:if="${!customItems.isEmpty()}" class="maintenance-list">
+                <li th:each="item : ${customItems}" class="maintenance-item">
+                    <div class="maintenance-info">
+                        <h4 th:text="${item.title}">Title</h4>
+                        <p th:if="${item.description}" th:text="${item.description}">Description</p>
+                    </div>
+                    <div class="maintenance-actions">
+                        <form th:action="@{'/car/' + ${carId} + '/maintenance/' + ${item.id} + '/delete'}" method="post"
+                              onsubmit="return confirm(this.dataset.confirm);"
+                              th:data-confirm="#{maintenance.delete.confirm}">
+                            <button type="submit" class="btn-icon delete" th:title="#{action.delete}">&#128465;</button>
+                        </form>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Default Items -->
+        <div class="card">
+            <h3 class="card-title" th:text="#{maintenance.default}">Default Items</h3>
+            <p style="color: var(--text-light); font-size: 0.875rem; margin-bottom: 1rem;"
+               th:text="${car.carType.name() == 'GASOLINE'} ? #{car.type.gasoline} : #{car.type.electric}">Car Type</p>
+
+            <ul class="maintenance-list">
+                <li th:each="item : ${defaultItems}" class="maintenance-item">
+                    <div class="maintenance-info">
+                        <h4 th:text="${item.title}">Title</h4>
+                        <p th:if="${item.description}" th:text="${item.description}">Description</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </main>
+
+    <nav class="bottom-nav" th:replace="~{fragments/nav :: nav}"></nav>
+    <script th:src="@{/js/app.js}"></script>
+</body>
+</html>

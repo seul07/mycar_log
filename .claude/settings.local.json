@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(.\\\\gradlew build:*)",
+      "Bash(gradlew.bat build:*)",
+      "Bash(echo:*)",
+      "Bash(if not exist \"D:\\\\ToyProject\\\\mycar_log\\\\mycar_log\\\\docker\" mkdir \"D:\\\\ToyProject\\\\mycar_log\\\\mycar_log\\\\docker\")"
+    ]
+  }
+}

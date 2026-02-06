@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{report.title}">Report</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <main class="container">
+        <div class="page-header">
+            <a th:href="@{/report}" class="back-btn">&larr;</a>
+            <h1>
+                <span th:text="${car.manufacturer}">Manufacturer</span>
+                <span th:text="${car.modelName}">Model</span>
+            </h1>
+        </div>
+
+        <!-- Period Selection -->
+        <div class="card period-selector">
+            <form id="periodForm" method="get" th:action="@{'/report/car/' + ${carId}}">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label th:for="startDate" th:text="#{statistics.start.date}">Start Date</label>
+                        <input type="date" id="startDate" name="startDate" class="form-control"
+                               th:value="${#temporals.format(startDate, 'yyyy-MM-dd')}">
+                    </div>
+                    <div class="form-group">
+                        <label th:for="endDate" th:text="#{statistics.end.date}">End Date</label>
+                        <input type="date" id="endDate" name="endDate" class="form-control"
+                               th:value="${#temporals.format(endDate, 'yyyy-MM-dd')}">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" th:text="#{statistics.apply}">Apply</button>
+            </form>
+        </div>
+
+        <!-- Mileage Summary -->
+        <div class="card report-section">
+            <h3 class="section-title">
+                <span class="section-icon">&#128663;</span>
+                <span th:text="#{report.mileage.summary}">Mileage Summary</span>
+            </h3>
+            <div class="mileage-summary">
+                <div class="mileage-item">
+                    <span class="mileage-label" th:text="#{report.mileage.period}">Period Distance</span>
+                    <span class="mileage-value" th:text="${#numbers.formatInteger(mileageStats['drivenDistance'] ?: 0, 1, 'COMMA')} + ' km'">0 km</span>
+                </div>
+                <div class="mileage-item">
+                    <span class="mileage-label" th:text="#{report.mileage.start}">Start Mileage</span>
+                    <span class="mileage-value secondary" th:text="${#numbers.formatInteger(mileageStats['startMileage'] ?: 0, 1, 'COMMA')} + ' km'">0 km</span>
+                </div>
+                <div class="mileage-item">
+                    <span class="mileage-label" th:text="#{report.mileage.end}">End Mileage</span>
+                    <span class="mileage-value secondary" th:text="${#numbers.formatInteger(mileageStats['endMileage'] ?: 0, 1, 'COMMA')} + ' km'">0 km</span>
+                </div>
+                <div class="mileage-item highlight">
+                    <span class="mileage-label" th:text="#{report.mileage.total}">Total Mileage</span>
+                    <span class="mileage-value" th:text="${#numbers.formatInteger(totalMileage ?: 0, 1, 'COMMA')} + ' km'">0 km</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Expense Summary -->
+        <div class="card report-section">
+            <h3 class="section-title">
+                <span class="section-icon">&#128176;</span>
+                <span th:text="#{report.expense.summary}">Expense Summary</span>
+            </h3>
+            <div class="expense-total-row">
+                <span th:text="#{expense.total}">Total</span>
+                <span class="expense-total-amount" th:text="${#numbers.formatInteger(totalAmount, 1, 'COMMA')} + ' 원'">0 원</span>
+            </div>
+        </div>
+
+        <!-- Category Breakdown -->
+        <div class="card report-section" th:if="${totalAmount > 0}">
+            <h3 class="section-title">
+                <span class="section-icon">&#128202;</span>
+                <span th:text="#{report.by.category}">By Category</span>
+            </h3>
+            <ul class="category-list">
+                <li th:each="category : ${categories}"
+                    th:if="${category.name() != 'MILEAGE' and categoryTotals.containsKey(category) and categoryTotals.get(category) > 0}"
+                    class="category-item">
+                    <div class="category-info">
+                        <span class="category-icon" th:switch="${category.name()}">
+                            <span th:case="'FUEL'">&#9981;</span>
+                            <span th:case="'MAINTENANCE'">&#128295;</span>
+                            <span th:case="'TAX'">&#128176;</span>
+                            <span th:case="'INSURANCE'">&#128737;</span>
+                            <span th:case="'PARKING'">&#127359;</span>
+                            <span th:case="'CAR_WASH'">&#128166;</span>
+                            <span th:case="'OTHER'">&#128221;</span>
+                        </span>
+                        <span class="category-name" th:switch="${category.name()}">
+                            <span th:case="'FUEL'" th:text="#{expense.category.fuel}">Fuel</span>
+                            <span th:case="'MAINTENANCE'" th:text="#{expense.category.maintenance}">Maintenance</span>
+                            <span th:case="'TAX'" th:text="#{expense.category.tax}">Tax</span>
+                            <span th:case="'INSURANCE'" th:text="#{expense.category.insurance}">Insurance</span>
+                            <span th:case="'PARKING'" th:text="#{expense.category.parking}">Parking</span>
+                            <span th:case="'CAR_WASH'" th:text="#{expense.category.carwash}">Car Wash</span>
+                            <span th:case="'OTHER'" th:text="#{expense.category.other}">Other</span>
+                        </span>
+                    </div>
+                    <div class="category-amount-info">
+                        <span class="category-amount"
+                              th:text="${#numbers.formatInteger(categoryTotals.get(category), 1, 'COMMA')} + ' 원'">0 원</span>
+                        <span class="category-percentage"
+                              th:text="'(' + ${#numbers.formatDecimal(categoryTotals.get(category) * 100 / totalAmount, 1, 1)} + '%)'">0%</span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" th:if="${totalAmount == 0}">
+            <p th:text="#{report.no.data}">No data for this period</p>
+        </div>
+    </main>
+
+    <nav class="bottom-nav" th:replace="~{fragments/nav :: nav}"></nav>
+    <script th:src="@{/js/app.js}"></script>
+</body>
+</html>

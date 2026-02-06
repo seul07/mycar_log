@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{report.title}">Report</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <main class="container">
+        <div class="page-header">
+            <h1 th:text="#{report.title}">Report</h1>
+        </div>
+
+        <p class="text-center" th:text="#{report.select.car}">Select a car to view report</p>
+
+        <div class="car-list" th:if="${#lists.size(cars) > 0}">
+            <a th:each="car : ${cars}" th:href="@{'/report/car/' + ${car.id}}" class="car-card-link">
+                <div class="car-card">
+                    <div class="car-info">
+                        <span class="car-manufacturer" th:text="${car.manufacturer}">Manufacturer</span>
+                        <span class="car-model" th:text="${car.modelName}">Model</span>
+                    </div>
+                    <div class="car-details">
+                        <span class="car-year" th:text="${car.modelYear}">2024</span>
+                        <span class="car-type" th:switch="${car.carType.name()}">
+                            <span th:case="'GASOLINE'" th:text="#{car.type.gasoline}">Gasoline</span>
+                            <span th:case="'ELECTRIC'" th:text="#{car.type.electric}">Electric</span>
+                        </span>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="empty-state" th:if="${#lists.size(cars) == 0}">
+            <p th:text="#{car.list.empty}">No cars registered</p>
+        </div>
+    </main>
+
+    <nav class="bottom-nav" th:replace="~{fragments/nav :: nav}"></nav>
+    <script th:src="@{/js/app.js}"></script>
+</body>
+</html>

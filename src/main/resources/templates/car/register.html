@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{car.register.title}">Register Car</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <main class="container">
+        <div class="page-header">
+            <a th:href="@{/}" class="back-btn">&larr;</a>
+            <h1 th:text="${carDto.id != null} ? #{settings.car.edit} : #{car.register.title}">Register Car</h1>
+        </div>
+
+        <div class="card">
+            <form th:action="${carDto.id != null} ? @{'/car/' + ${carDto.id} + '/edit'} : @{/car/register}"
+                  method="post" th:object="${carDto}">
+                <input type="hidden" th:field="*{id}" th:if="${carDto.id != null}">
+
+                <div class="form-group">
+                    <label th:for="manufacturer" th:text="#{car.manufacturer}">Manufacturer</label>
+                    <input type="text" id="manufacturer" th:field="*{manufacturer}"
+                           class="form-control" required
+                           th:classappend="${#fields.hasErrors('manufacturer')} ? 'error' : ''">
+                    <span th:if="${#fields.hasErrors('manufacturer')}" th:errors="*{manufacturer}"
+                          class="error-text"></span>
+                </div>
+
+                <div class="form-group">
+                    <label th:for="modelName" th:text="#{car.modelName}">Model Name</label>
+                    <input type="text" id="modelName" th:field="*{modelName}"
+                           class="form-control" required
+                           th:classappend="${#fields.hasErrors('modelName')} ? 'error' : ''">
+                    <span th:if="${#fields.hasErrors('modelName')}" th:errors="*{modelName}"
+                          class="error-text"></span>
+                </div>
+
+                <div class="form-group">
+                    <label th:for="modelYear" th:text="#{car.modelYear}">Year</label>
+                    <input type="number" id="modelYear" th:field="*{modelYear}"
+                           class="form-control" required min="1900" max="2100"
+                           th:classappend="${#fields.hasErrors('modelYear')} ? 'error' : ''">
+                    <span th:if="${#fields.hasErrors('modelYear')}" th:errors="*{modelYear}"
+                          class="error-text"></span>
+                </div>
+
+                <div class="form-group">
+                    <label th:for="initialMileage" th:text="#{car.initialMileage}">Initial Mileage</label>
+                    <input type="number" id="initialMileage" th:field="*{initialMileage}"
+                           class="form-control" required min="0"
+                           th:classappend="${#fields.hasErrors('initialMileage')} ? 'error' : ''">
+                    <span th:if="${#fields.hasErrors('initialMileage')}" th:errors="*{initialMileage}"
+                          class="error-text"></span>
+                </div>
+
+                <div class="form-group">
+                    <label th:for="carType" th:text="#{car.carType}">Car Type</label>
+                    <select id="carType" th:field="*{carType}" class="form-control" required
+                            th:classappend="${#fields.hasErrors('carType')} ? 'error' : ''">
+                        <option value="">-- Select --</option>
+                        <option th:each="type : ${carTypes}"
+                                th:value="${type}"
+                                th:text="${type.name() == 'GASOLINE'} ? #{car.type.gasoline} : #{car.type.electric}">
+                            Type
+                        </option>
+                    </select>
+                    <span th:if="${#fields.hasErrors('carType')}" th:errors="*{carType}"
+                          class="error-text"></span>
+                </div>
+
+                <div class="form-group mt-3">
+                    <button type="submit" class="btn btn-primary" style="width: 100%;"
+                            th:text="#{action.save}">Save</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <nav class="bottom-nav" th:replace="~{fragments/nav :: nav}"></nav>
+    <script th:src="@{/js/app.js}"></script>
+</body>
+</html>

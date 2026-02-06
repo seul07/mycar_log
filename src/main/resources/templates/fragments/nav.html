@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<nav th:fragment="nav" class="bottom-nav">
+    <a th:href="@{/}" th:classappend="${currentPage == 'home'} ? 'active' : ''">
+        <span class="icon">&#127968;</span>
+        <span th:text="#{nav.home}">Home</span>
+    </a>
+    <a th:href="@{/statistics}" th:classappend="${currentPage == 'statistics'} ? 'active' : ''">
+        <span class="icon">&#128200;</span>
+        <span th:text="#{nav.statistics}">Statistics</span>
+    </a>
+    <a th:href="@{/report}" th:classappend="${currentPage == 'report'} ? 'active' : ''">
+        <span class="icon">&#128196;</span>
+        <span th:text="#{nav.report}">Report</span>
+    </a>
+    <a th:href="@{/settings}" th:classappend="${currentPage == 'settings'} ? 'active' : ''">
+        <span class="icon">&#9881;</span>
+        <span th:text="#{nav.settings}">Settings</span>
+    </a>
+</nav>
+</html>

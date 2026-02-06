@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{expense.select.category}">Select Category</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <main class="container">
+        <div class="page-header">
+            <a th:href="@{'/car/' + ${carId} + '/expense/' + ${date}}" class="back-btn">&larr;</a>
+            <h1 th:text="#{expense.select.category}">Select Category</h1>
+        </div>
+
+        <div class="category-grid">
+            <a th:each="category : ${categories}"
+               th:href="@{'/car/' + ${carId} + '/expense/' + ${date} + '/add/' + ${category.name()}}"
+               class="category-item">
+                <span class="icon" th:switch="${category.name()}">
+                    <span th:case="'FUEL'">&#9981;</span>
+                    <span th:case="'MAINTENANCE'">&#128295;</span>
+                    <span th:case="'TAX'">&#128176;</span>
+                    <span th:case="'INSURANCE'">&#128737;</span>
+                    <span th:case="'PARKING'">&#127359;</span>
+                    <span th:case="'CAR_WASH'">&#128166;</span>
+                    <span th:case="'OTHER'">&#128221;</span>
+                </span>
+                <span th:switch="${category.name()}">
+                    <span th:case="'FUEL'" th:text="#{expense.category.fuel}">Fuel</span>
+                    <span th:case="'MAINTENANCE'" th:text="#{expense.category.maintenance}">Maintenance</span>
+                    <span th:case="'TAX'" th:text="#{expense.category.tax}">Tax</span>
+                    <span th:case="'INSURANCE'" th:text="#{expense.category.insurance}">Insurance</span>
+                    <span th:case="'PARKING'" th:text="#{expense.category.parking}">Parking</span>
+                    <span th:case="'CAR_WASH'" th:text="#{expense.category.carwash}">Car Wash</span>
+                    <span th:case="'OTHER'" th:text="#{expense.category.other}">Other</span>
+                </span>
+            </a>
+        </div>
+    </main>
+
+    <nav class="bottom-nav" th:replace="~{fragments/nav :: nav}"></nav>
+    <script th:src="@{/js/app.js}"></script>
+</body>
+</html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{expense.date} + ' - ' + #{app.title}">Day Detail</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <main class="container">
+        <div class="page-header">
+            <a th:href="@{'/car/' + ${carId}}" class="back-btn">&larr;</a>
+            <h1 th:text="${#temporals.format(date, 'yyyy년 M월 d일')}">Date</h1>
+        </div>
+
+        <!-- Mileage Input Section -->
+        <div class="card mileage-card">
+            <div class="mileage-header">
+                <span class="mileage-icon">&#128663;</span>
+                <span th:text="#{expense.category.mileage}">Mileage</span>
+            </div>
+            <form th:action="@{'/car/' + ${carId} + '/mileage/' + ${dateStr}}" method="post"
+                  id="mileageForm" onsubmit="return validateMileage()">
+                <div class="mileage-input-row">
+                    <div class="mileage-info">
+                        <span class="mileage-label" th:text="#{mileage.previous}">Previous</span>
+                        <span class="mileage-value" th:if="${previousMileage != null}" th:text="${#numbers.formatInteger(previousMileage, 1, 'COMMA')} + ' km'">0 km</span>
+                        <span class="mileage-value" th:if="${previousMileage == null}">-</span>
+                    </div>
+                    <div class="mileage-input-group">
+                        <input type="number" id="currentMileage" name="currentMileage"
+                               class="form-control"
+                               th:value="${todayMileage}"
+                               th:placeholder="#{mileage.current}"
+                               min="0">
+                        <span class="input-suffix">km</span>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-sm" th:text="#{action.save}">Save</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Expense List -->
+        <div class="card" th:if="${expenses.isEmpty()}">
+            <div class="empty-state">
+                <div class="icon">&#128466;</div>
+                <p th:text="#{expense.empty}">No expenses recorded</p>
+            </div>
+        </div>
+
+        <div class="card" th:if="${!expenses.isEmpty()}">
+            <ul class="expense-list">
+                <li th:each="expense : ${expenses}" class="expense-item">
+                    <a th:href="@{'/car/' + ${carId} + '/expense/' + ${expense.id} + '/edit'}" class="expense-info">
+                        <span class="expense-icon" th:switch="${expense.category.name()}">
+                            <span th:case="'FUEL'">&#9981;</span>
+                            <span th:case="'MAINTENANCE'">&#128295;</span>
+                            <span th:case="'TAX'">&#128176;</span>
+                            <span th:case="'INSURANCE'">&#128737;</span>
+                            <span th:case="'PARKING'">&#127359;</span>
+                            <span th:case="'CAR_WASH'">&#128166;</span>
+                            <span th:case="'OTHER'">&#128221;</span>
+                        </span>
+                        <div>
+                            <div class="expense-category" th:switch="${expense.category.name()}">
+                                <span th:case="'FUEL'" th:text="#{expense.category.fuel}">Fuel</span>
+                                <span th:case="'MAINTENANCE'" th:text="#{expense.category.maintenance}">Maintenance</span>
+                                <span th:case="'TAX'" th:text="#{expense.category.tax}">Tax</span>
+                                <span th:case="'INSURANCE'" th:text="#{expense.category.insurance}">Insurance</span>
+                                <span th:case="'PARKING'" th:text="#{expense.category.parking}">Parking</span>
+                                <span th:case="'CAR_WASH'" th:text="#{expense.category.carwash}">Car Wash</span>
+                                <span th:case="'OTHER'" th:text="#{expense.category.other}">Other</span>
+                            </div>
+                            <div class="expense-desc" th:if="${expense.category.name() == 'FUEL' && expense.liters != null}">
+                                <span th:text="${expense.liters} + 'L'">Liters</span>
+                                <span th:if="${expense.pricePerLiter != null}"
+                                      th:text="' @ ' + ${#numbers.formatInteger(expense.pricePerLiter, 1, 'COMMA')} + '원/L'">Price</span>
+                            </div>
+                            <div class="expense-desc" th:if="${expense.category.name() == 'MAINTENANCE' && expense.maintenanceItemTitle != null}"
+                                 th:text="${expense.maintenanceItemTitle}">Maintenance Item</div>
+                            <div class="expense-desc" th:if="${expense.category.name() == 'INSURANCE' && expense.insuranceType != null}"
+                                 th:text="${expense.insuranceType}">Insurance Type</div>
+                            <div class="expense-desc" th:if="${expense.description != null && expense.description != ''}"
+                                 th:text="${expense.description}">Description</div>
+                        </div>
+                    </a>
+                    <span class="expense-amount"
+                          th:text="${#numbers.formatInteger(expense.amount, 1, 'COMMA')} + '원'">Amount</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Total Amount -->
+        <div class="card total-card" th:if="${totalAmount > 0}">
+            <div class="total-row">
+                <span th:text="#{expense.total}">Total</span>
+                <span class="total-amount" th:text="${#numbers.formatInteger(totalAmount, 1, 'COMMA')} + '원'">0원</span>
+            </div>
+        </div>
+
+        <a th:href="@{'/car/' + ${carId} + '/expense/' + ${dateStr} + '/add'}" class="add-btn">+</a>
+    </main>
+
+    <nav class="bottom-nav" th:replace="~{fragments/nav :: nav}"></nav>
+
+    <script th:inline="javascript">
+        const previousMileage = [[${previousMileage}]] || 0;
+        const mileageValidationMsg = [[#{mileage.validation.less}]];
+        const requiredMsg = [[#{validation.required}]];
+
+        function validateMileage() {
+            const currentMileage = document.getElementById('currentMileage').value;
+            if (!currentMileage || currentMileage.trim() === '') {
+                alert(requiredMsg);
+                return false;
+            }
+            if (previousMileage > 0 && parseInt(currentMileage) < previousMileage) {
+                alert(mileageValidationMsg);
+                return false;
+            }
+            return true;
+        }
+    </script>
+    <script th:src="@{/js/app.js}"></script>
+</body>
+</html>
