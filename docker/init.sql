@@ -1,6 +1,9 @@
 -- mycar_log Database Initialization Script
 -- Auto-executed on first MySQL container startup
 
+SET NAMES utf8mb4;
+SET CHARACTER SET utf8mb4;
+
 CREATE DATABASE IF NOT EXISTS car_log
     DEFAULT CHARACTER SET utf8mb4
     DEFAULT COLLATE utf8mb4_unicode_ci;
