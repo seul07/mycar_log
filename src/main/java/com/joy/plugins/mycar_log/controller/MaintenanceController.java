@@ -6,7 +6,9 @@ import com.joy.plugins.mycar_log.entity.User;
 import com.joy.plugins.mycar_log.service.CarService;
 import com.joy.plugins.mycar_log.service.MaintenanceService;
 import com.joy.plugins.mycar_log.service.UserService;
-import jakarta.servlet.http.HttpSession;
+import com.joy.plugins.mycar_log.util.AuthUtil;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -30,8 +32,8 @@ public class MaintenanceController {
     }
 
     @GetMapping
-    public String list(@PathVariable Long carId, HttpSession session, Model model) {
-        User user = getCurrentUser(session);
+    public String list(@PathVariable Long carId, @AuthenticationPrincipal OAuth2User principal, Model model) {
+        User user = getCurrentUser(principal);
         Optional<Car> car = carService.findByIdAndUserId(carId, user.getId());
 
         if (car.isEmpty()) {
@@ -50,8 +52,8 @@ public class MaintenanceController {
     }
 
     @GetMapping("/add")
-    public String addForm(@PathVariable Long carId, HttpSession session, Model model) {
-        User user = getCurrentUser(session);
+    public String addForm(@PathVariable Long carId, @AuthenticationPrincipal OAuth2User principal, Model model) {
+        User user = getCurrentUser(principal);
         Optional<Car> car = carService.findByIdAndUserId(carId, user.getId());
 
         if (car.isEmpty()) {
@@ -67,9 +69,9 @@ public class MaintenanceController {
     public String add(@PathVariable Long carId,
                       @RequestParam String title,
                       @RequestParam(required = false) String description,
-                      HttpSession session,
+                      @AuthenticationPrincipal OAuth2User principal,
                       RedirectAttributes redirectAttributes) {
-        User user = getCurrentUser(session);
+        User user = getCurrentUser(principal);
         Optional<Car> car = carService.findByIdAndUserId(carId, user.getId());
 
         if (car.isEmpty()) {
@@ -89,9 +91,9 @@ public class MaintenanceController {
     @PostMapping("/{id}/delete")
     public String delete(@PathVariable Long carId,
                          @PathVariable Long id,
-                         HttpSession session,
+                         @AuthenticationPrincipal OAuth2User principal,
                          RedirectAttributes redirectAttributes) {
-        User user = getCurrentUser(session);
+        User user = getCurrentUser(principal);
         Optional<Car> car = carService.findByIdAndUserId(carId, user.getId());
 
         if (car.isEmpty()) {
@@ -107,12 +109,8 @@ public class MaintenanceController {
         return "redirect:/car/" + carId + "/maintenance";
     }
 
-    private User getCurrentUser(HttpSession session) {
-        String firebaseUid = (String) session.getAttribute("firebaseUid");
-        if (firebaseUid == null) {
-            firebaseUid = "anon_" + session.getId();
-            session.setAttribute("firebaseUid", firebaseUid);
-        }
-        return userService.getOrCreateUser(firebaseUid);
+    private User getCurrentUser(OAuth2User principal) {
+        String oauthId = AuthUtil.getOauthId(principal);
+        return userService.getOrCreateUser(oauthId);
     }
 }

@@ -11,18 +11,26 @@
 
 ## 1. Users Table (사용자)
 
-Firebase Authentication UID를 저장하여 사용자를 식별합니다.
+OAuth2 로그인(Google, Kakao) ID를 저장하여 사용자를 식별합니다.
 
 ```sql
 CREATE TABLE users (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    firebase_uid VARCHAR(128) NOT NULL UNIQUE COMMENT 'Firebase Authentication UID',
-    email VARCHAR(255) NULL COMMENT '이메일 (소셜 로그인 전환 시 사용)',
+    oauth_id VARCHAR(128) NOT NULL UNIQUE COMMENT 'OAuth2 Provider ID (google_xxx, kakao_xxx)',
+    email VARCHAR(255) NULL COMMENT '이메일',
     display_name VARCHAR(100) NULL COMMENT '표시 이름',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX idx_firebase_uid (firebase_uid)
+    INDEX idx_oauth_id (oauth_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='사용자 정보';
+```
+
+### 기존 테이블 마이그레이션 (firebase_uid → oauth_id)
+
+```sql
+ALTER TABLE users CHANGE COLUMN firebase_uid oauth_id VARCHAR(128) NOT NULL COMMENT 'OAuth2 Provider ID (google_xxx, kakao_xxx)';
+ALTER TABLE users DROP INDEX idx_firebase_uid;
+ALTER TABLE users ADD INDEX idx_oauth_id (oauth_id);
 ```
 
 ---

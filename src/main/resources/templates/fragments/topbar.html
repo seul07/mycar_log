@@ -3,11 +3,17 @@
 <header th:fragment="topbar" class="top-bar">
     <div class="top-bar-content">
         <a th:href="@{/}" class="top-bar-title" th:text="#{app.title}">MyCar Log</a>
-        <div class="lang-switch">
-            <a th:href="@{''(lang='ko')}"
-               th:classappend="${#locale.language == 'ko'} ? ' active' : ''">KO</a>
-            <a th:href="@{''(lang='en')}"
-               th:classappend="${#locale.language == 'en'} ? ' active' : ''">EN</a>
+        <div class="top-bar-right">
+            <span th:if="${loggedInUserName}" class="top-bar-user" th:text="${loggedInUserName}"></span>
+            <form th:if="${loggedInUserName}" th:action="@{/logout}" method="post" class="logout-form">
+                <button type="submit" class="logout-btn" th:text="#{logout}">Logout</button>
+            </form>
+            <div class="lang-switch">
+                <a th:href="@{''(lang='ko')}"
+                   th:classappend="${#locale.language == 'ko'} ? ' active' : ''">KO</a>
+                <a th:href="@{''(lang='en')}"
+                   th:classappend="${#locale.language == 'en'} ? ' active' : ''">EN</a>
+            </div>
         </div>
     </div>
 </header>

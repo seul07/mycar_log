@@ -13,12 +13,12 @@ USE car_log;
 -- 1. Users Table
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    firebase_uid VARCHAR(128) NOT NULL UNIQUE COMMENT 'Firebase Authentication UID',
-    email VARCHAR(255) NULL COMMENT '이메일 (소셜 로그인 전환 시 사용)',
+    oauth_id VARCHAR(128) NOT NULL UNIQUE COMMENT 'OAuth2 Provider ID (google_xxx, kakao_xxx)',
+    email VARCHAR(255) NULL COMMENT '이메일',
     display_name VARCHAR(100) NULL COMMENT '표시 이름',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX idx_firebase_uid (firebase_uid)
+    INDEX idx_oauth_id (oauth_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='사용자 정보';
 
 -- 2. Cars Table

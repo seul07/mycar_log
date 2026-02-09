@@ -5,7 +5,9 @@ import com.joy.plugins.mycar_log.entity.User;
 import com.joy.plugins.mycar_log.service.CarService;
 import com.joy.plugins.mycar_log.service.ExpenseService;
 import com.joy.plugins.mycar_log.service.UserService;
-import jakarta.servlet.http.HttpSession;
+import com.joy.plugins.mycar_log.util.AuthUtil;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,8 +33,8 @@ public class HomeController {
     }
 
     @GetMapping("/")
-    public String home(HttpSession session, Model model) {
-        User user = getCurrentUser(session);
+    public String home(@AuthenticationPrincipal OAuth2User principal, Model model) {
+        User user = getCurrentUser(principal);
         List<Car> cars = carService.getCarsByUser(user);
 
         model.addAttribute("user", user);
@@ -42,8 +44,8 @@ public class HomeController {
     }
 
     @GetMapping("/car/{carId}")
-    public String carDetail(@PathVariable Long carId, HttpSession session, Model model) {
-        User user = getCurrentUser(session);
+    public String carDetail(@PathVariable Long carId, @AuthenticationPrincipal OAuth2User principal, Model model) {
+        User user = getCurrentUser(principal);
         Optional<Car> car = carService.findByIdAndUserId(carId, user.getId());
 
         if (car.isEmpty()) {
@@ -66,8 +68,8 @@ public class HomeController {
     public Map<String, Object> getCalendarData(@PathVariable Long carId,
                                                 @PathVariable int year,
                                                 @PathVariable int month,
-                                                HttpSession session) {
-        User user = getCurrentUser(session);
+                                                @AuthenticationPrincipal OAuth2User principal) {
+        User user = getCurrentUser(principal);
         Optional<Car> car = carService.findByIdAndUserId(carId, user.getId());
 
         if (car.isEmpty()) {
@@ -77,16 +79,8 @@ public class HomeController {
         return expenseService.getMonthlyCalendarData(carId, year, month);
     }
 
-    private User getCurrentUser(HttpSession session) {
-        String sessionId = session.getId();
-        String firebaseUid = (String) session.getAttribute("firebaseUid");
-
-        if (firebaseUid == null) {
-            // Generate anonymous UID for development
-            firebaseUid = "anon_" + sessionId;
-            session.setAttribute("firebaseUid", firebaseUid);
-        }
-
-        return userService.getOrCreateUser(firebaseUid);
+    private User getCurrentUser(OAuth2User principal) {
+        String oauthId = AuthUtil.getOauthId(principal);
+        return userService.getOrCreateUser(oauthId);
     }
 }

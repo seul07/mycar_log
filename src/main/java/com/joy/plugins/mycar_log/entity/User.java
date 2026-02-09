@@ -13,8 +13,8 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "firebase_uid", nullable = false, unique = true, length = 128)
-    private String firebaseUid;
+    @Column(name = "oauth_id", nullable = false, unique = true, length = 128)
+    private String oauthId;
 
     @Column(length = 255)
     private String email;
@@ -51,12 +51,12 @@ public class User {
         this.id = id;
     }
 
-    public String getFirebaseUid() {
-        return firebaseUid;
+    public String getOauthId() {
+        return oauthId;
     }
 
-    public void setFirebaseUid(String firebaseUid) {
-        this.firebaseUid = firebaseUid;
+    public void setOauthId(String oauthId) {
+        this.oauthId = oauthId;
     }
 
     public String getEmail() {

@@ -7,8 +7,10 @@ import com.joy.plugins.mycar_log.service.CarService;
 import com.joy.plugins.mycar_log.service.ExpenseService;
 import com.joy.plugins.mycar_log.service.MileageService;
 import com.joy.plugins.mycar_log.service.UserService;
-import jakarta.servlet.http.HttpSession;
+import com.joy.plugins.mycar_log.util.AuthUtil;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -37,8 +39,8 @@ public class ReportController {
     }
 
     @GetMapping
-    public String index(HttpSession session, Model model) {
-        User user = getCurrentUser(session);
+    public String index(@AuthenticationPrincipal OAuth2User principal, Model model) {
+        User user = getCurrentUser(principal);
         List<Car> cars = carService.getCarsByUser(user);
 
         model.addAttribute("cars", cars);
@@ -50,9 +52,9 @@ public class ReportController {
     public String carReport(@PathVariable Long carId,
                             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
                             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-                            HttpSession session,
+                            @AuthenticationPrincipal OAuth2User principal,
                             Model model) {
-        User user = getCurrentUser(session);
+        User user = getCurrentUser(principal);
         Optional<Car> car = carService.findByIdAndUserId(carId, user.getId());
 
         if (car.isEmpty()) {
@@ -89,12 +91,8 @@ public class ReportController {
         return "report/car";
     }
 
-    private User getCurrentUser(HttpSession session) {
-        String firebaseUid = (String) session.getAttribute("firebaseUid");
-        if (firebaseUid == null) {
-            firebaseUid = "anon_" + session.getId();
-            session.setAttribute("firebaseUid", firebaseUid);
-        }
-        return userService.getOrCreateUser(firebaseUid);
+    private User getCurrentUser(OAuth2User principal) {
+        String oauthId = AuthUtil.getOauthId(principal);
+        return userService.getOrCreateUser(oauthId);
     }
 }

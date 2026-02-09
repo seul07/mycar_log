@@ -6,8 +6,10 @@ import com.joy.plugins.mycar_log.entity.User;
 import com.joy.plugins.mycar_log.entity.enums.CarType;
 import com.joy.plugins.mycar_log.service.CarService;
 import com.joy.plugins.mycar_log.service.UserService;
-import jakarta.servlet.http.HttpSession;
+import com.joy.plugins.mycar_log.util.AuthUtil;
 import jakarta.validation.Valid;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -39,7 +41,7 @@ public class CarController {
     @PostMapping("/register")
     public String register(@Valid @ModelAttribute CarDto carDto,
                            BindingResult bindingResult,
-                           HttpSession session,
+                           @AuthenticationPrincipal OAuth2User principal,
                            Model model,
                            RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
@@ -48,14 +50,14 @@ public class CarController {
             return "car/register";
         }
 
-        User user = getCurrentUser(session);
+        User user = getCurrentUser(principal);
         Car car = carService.registerCar(carDto, user);
         return "redirect:/car/" + car.getId();
     }
 
     @GetMapping("/{carId}/edit")
-    public String editForm(@PathVariable Long carId, HttpSession session, Model model) {
-        User user = getCurrentUser(session);
+    public String editForm(@PathVariable Long carId, @AuthenticationPrincipal OAuth2User principal, Model model) {
+        User user = getCurrentUser(principal);
         Optional<Car> car = carService.findByIdAndUserId(carId, user.getId());
 
         if (car.isEmpty()) {
@@ -72,10 +74,10 @@ public class CarController {
     public String edit(@PathVariable Long carId,
                        @Valid @ModelAttribute CarDto carDto,
                        BindingResult bindingResult,
-                       HttpSession session,
+                       @AuthenticationPrincipal OAuth2User principal,
                        Model model,
                        RedirectAttributes redirectAttributes) {
-        User user = getCurrentUser(session);
+        User user = getCurrentUser(principal);
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("carTypes", CarType.values());
@@ -89,18 +91,14 @@ public class CarController {
     }
 
     @PostMapping("/{carId}/delete")
-    public String delete(@PathVariable Long carId, HttpSession session) {
-        User user = getCurrentUser(session);
+    public String delete(@PathVariable Long carId, @AuthenticationPrincipal OAuth2User principal) {
+        User user = getCurrentUser(principal);
         carService.deleteCar(carId, user.getId());
         return "redirect:/";
     }
 
-    private User getCurrentUser(HttpSession session) {
-        String firebaseUid = (String) session.getAttribute("firebaseUid");
-        if (firebaseUid == null) {
-            firebaseUid = "anon_" + session.getId();
-            session.setAttribute("firebaseUid", firebaseUid);
-        }
-        return userService.getOrCreateUser(firebaseUid);
+    private User getCurrentUser(OAuth2User principal) {
+        String oauthId = AuthUtil.getOauthId(principal);
+        return userService.getOrCreateUser(oauthId);
     }
 }

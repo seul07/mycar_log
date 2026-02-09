@@ -7,8 +7,10 @@ import com.joy.plugins.mycar_log.entity.MaintenanceItem;
 import com.joy.plugins.mycar_log.entity.User;
 import com.joy.plugins.mycar_log.entity.enums.ExpenseCategory;
 import com.joy.plugins.mycar_log.service.*;
-import jakarta.servlet.http.HttpSession;
+import com.joy.plugins.mycar_log.util.AuthUtil;
 import jakarta.validation.Valid;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -45,9 +47,9 @@ public class ExpenseController {
     @GetMapping("/{date}")
     public String dayDetail(@PathVariable Long carId,
                             @PathVariable String date,
-                            HttpSession session,
+                            @AuthenticationPrincipal OAuth2User principal,
                             Model model) {
-        User user = getCurrentUser(session);
+        User user = getCurrentUser(principal);
         Optional<Car> car = carService.findByIdAndUserId(carId, user.getId());
         if (car.isEmpty()) {
             return "redirect:/";
@@ -87,9 +89,9 @@ public class ExpenseController {
     @GetMapping("/{date}/add")
     public String selectCategory(@PathVariable Long carId,
                                  @PathVariable String date,
-                                 HttpSession session,
+                                 @AuthenticationPrincipal OAuth2User principal,
                                  Model model) {
-        User user = getCurrentUser(session);
+        User user = getCurrentUser(principal);
         Optional<Car> car = carService.findByIdAndUserId(carId, user.getId());
         if (car.isEmpty()) {
             return "redirect:/";
@@ -111,9 +113,9 @@ public class ExpenseController {
     public String addForm(@PathVariable Long carId,
                           @PathVariable String date,
                           @PathVariable ExpenseCategory category,
-                          HttpSession session,
+                          @AuthenticationPrincipal OAuth2User principal,
                           Model model) {
-        User user = getCurrentUser(session);
+        User user = getCurrentUser(principal);
         Optional<Car> car = carService.findByIdAndUserId(carId, user.getId());
         if (car.isEmpty()) {
             return "redirect:/";
@@ -146,10 +148,10 @@ public class ExpenseController {
                       @PathVariable ExpenseCategory category,
                       @Valid @ModelAttribute ExpenseDto expenseDto,
                       BindingResult bindingResult,
-                      HttpSession session,
+                      @AuthenticationPrincipal OAuth2User principal,
                       Model model,
                       RedirectAttributes redirectAttributes) {
-        User user = getCurrentUser(session);
+        User user = getCurrentUser(principal);
         Optional<Car> car = carService.findByIdAndUserId(carId, user.getId());
         if (car.isEmpty()) {
             return "redirect:/";
@@ -186,9 +188,9 @@ public class ExpenseController {
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Long carId,
                            @PathVariable Long id,
-                           HttpSession session,
+                           @AuthenticationPrincipal OAuth2User principal,
                            Model model) {
-        User user = getCurrentUser(session);
+        User user = getCurrentUser(principal);
         Optional<Car> car = carService.findByIdAndUserId(carId, user.getId());
         if (car.isEmpty()) {
             return "redirect:/";
@@ -224,10 +226,10 @@ public class ExpenseController {
                        @PathVariable Long id,
                        @Valid @ModelAttribute ExpenseDto expenseDto,
                        BindingResult bindingResult,
-                       HttpSession session,
+                       @AuthenticationPrincipal OAuth2User principal,
                        Model model,
                        RedirectAttributes redirectAttributes) {
-        User user = getCurrentUser(session);
+        User user = getCurrentUser(principal);
         Optional<Car> car = carService.findByIdAndUserId(carId, user.getId());
         if (car.isEmpty()) {
             return "redirect:/";
@@ -271,9 +273,9 @@ public class ExpenseController {
     @PostMapping("/{id}/delete")
     public String delete(@PathVariable Long carId,
                          @PathVariable Long id,
-                         HttpSession session,
+                         @AuthenticationPrincipal OAuth2User principal,
                          RedirectAttributes redirectAttributes) {
-        User user = getCurrentUser(session);
+        User user = getCurrentUser(principal);
         Optional<Car> car = carService.findByIdAndUserId(carId, user.getId());
         if (car.isEmpty()) {
             return "redirect:/";
@@ -289,12 +291,8 @@ public class ExpenseController {
         return "redirect:/car/" + carId + "/expense/" + date;
     }
 
-    private User getCurrentUser(HttpSession session) {
-        String firebaseUid = (String) session.getAttribute("firebaseUid");
-        if (firebaseUid == null) {
-            firebaseUid = "anon_" + session.getId();
-            session.setAttribute("firebaseUid", firebaseUid);
-        }
-        return userService.getOrCreateUser(firebaseUid);
+    private User getCurrentUser(OAuth2User principal) {
+        String oauthId = AuthUtil.getOauthId(principal);
+        return userService.getOrCreateUser(oauthId);
     }
 }

@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @Transactional(readOnly = true)
@@ -18,30 +17,42 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public Optional<User> findByFirebaseUid(String firebaseUid) {
-        return userRepository.findByFirebaseUid(firebaseUid);
+    public Optional<User> findByOauthId(String oauthId) {
+        return userRepository.findByOauthId(oauthId);
     }
 
     @Transactional
-    public User getOrCreateUser(String firebaseUid) {
-        return userRepository.findByFirebaseUid(firebaseUid)
+    public User getOrCreateUser(String oauthId) {
+        return userRepository.findByOauthId(oauthId)
                 .orElseGet(() -> {
                     User user = new User();
-                    user.setFirebaseUid(firebaseUid);
+                    user.setOauthId(oauthId);
                     return userRepository.save(user);
                 });
     }
 
     @Transactional
-    public User getOrCreateAnonymousUser(String sessionId) {
-        // For development without Firebase, use session-based anonymous user
-        String anonymousUid = "anon_" + sessionId;
-        return getOrCreateUser(anonymousUid);
-    }
-
-    @Transactional
-    public String generateAnonymousUid() {
-        return "anon_" + UUID.randomUUID().toString();
+    public User getOrCreateOAuthUser(String oauthId, String email, String displayName) {
+        return userRepository.findByOauthId(oauthId)
+                .map(user -> {
+                    boolean updated = false;
+                    if (email != null && !email.equals(user.getEmail())) {
+                        user.setEmail(email);
+                        updated = true;
+                    }
+                    if (displayName != null && !displayName.equals(user.getDisplayName())) {
+                        user.setDisplayName(displayName);
+                        updated = true;
+                    }
+                    return updated ? userRepository.save(user) : user;
+                })
+                .orElseGet(() -> {
+                    User user = new User();
+                    user.setOauthId(oauthId);
+                    user.setEmail(email);
+                    user.setDisplayName(displayName);
+                    return userRepository.save(user);
+                });
     }
 
     public Optional<User> findById(Long id) {

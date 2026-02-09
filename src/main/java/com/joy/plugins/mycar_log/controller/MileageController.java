@@ -6,7 +6,9 @@ import com.joy.plugins.mycar_log.service.CarService;
 import com.joy.plugins.mycar_log.service.ExpenseService;
 import com.joy.plugins.mycar_log.service.MileageService;
 import com.joy.plugins.mycar_log.service.UserService;
-import jakarta.servlet.http.HttpSession;
+import com.joy.plugins.mycar_log.util.AuthUtil;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,8 +36,8 @@ public class MileageController {
     public String saveMileage(@PathVariable Long carId,
                               @PathVariable String date,
                               @RequestParam(required = false) Long currentMileage,
-                              HttpSession session) {
-        User user = getCurrentUser(session);
+                              @AuthenticationPrincipal OAuth2User principal) {
+        User user = getCurrentUser(principal);
         Optional<Car> car = carService.findByIdAndUserId(carId, user.getId());
 
         if (car.isEmpty()) {
@@ -51,12 +53,8 @@ public class MileageController {
         return "redirect:/car/" + carId + "/expense/" + date;
     }
 
-    private User getCurrentUser(HttpSession session) {
-        String firebaseUid = (String) session.getAttribute("firebaseUid");
-        if (firebaseUid == null) {
-            firebaseUid = "anon_" + session.getId();
-            session.setAttribute("firebaseUid", firebaseUid);
-        }
-        return userService.getOrCreateUser(firebaseUid);
+    private User getCurrentUser(OAuth2User principal) {
+        String oauthId = AuthUtil.getOauthId(principal);
+        return userService.getOrCreateUser(oauthId);
     }
 }

@@ -4,12 +4,13 @@ import com.joy.plugins.mycar_log.entity.Car;
 import com.joy.plugins.mycar_log.entity.User;
 import com.joy.plugins.mycar_log.service.CarService;
 import com.joy.plugins.mycar_log.service.UserService;
-import jakarta.servlet.http.HttpSession;
+import com.joy.plugins.mycar_log.util.AuthUtil;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,8 +27,8 @@ public class SettingsController {
     }
 
     @GetMapping("/settings")
-    public String index(HttpSession session, Model model) {
-        User user = getCurrentUser(session);
+    public String index(@AuthenticationPrincipal OAuth2User principal, Model model) {
+        User user = getCurrentUser(principal);
         List<Car> cars = carService.getCarsByUser(user);
         model.addAttribute("cars", cars);
         model.addAttribute("currentPage", "settings");
@@ -35,8 +36,8 @@ public class SettingsController {
     }
 
     @GetMapping("/car/{carId}/settings")
-    public String carSettings(@PathVariable Long carId, HttpSession session, Model model) {
-        User user = getCurrentUser(session);
+    public String carSettings(@PathVariable Long carId, @AuthenticationPrincipal OAuth2User principal, Model model) {
+        User user = getCurrentUser(principal);
         Optional<Car> car = carService.findByIdAndUserId(carId, user.getId());
 
         if (car.isEmpty()) {
@@ -49,12 +50,8 @@ public class SettingsController {
         return "settings/car";
     }
 
-    private User getCurrentUser(HttpSession session) {
-        String firebaseUid = (String) session.getAttribute("firebaseUid");
-        if (firebaseUid == null) {
-            firebaseUid = "anon_" + session.getId();
-            session.setAttribute("firebaseUid", firebaseUid);
-        }
-        return userService.getOrCreateUser(firebaseUid);
+    private User getCurrentUser(OAuth2User principal) {
+        String oauthId = AuthUtil.getOauthId(principal);
+        return userService.getOrCreateUser(oauthId);
     }
 }
