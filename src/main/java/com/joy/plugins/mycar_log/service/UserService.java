@@ -40,7 +40,7 @@ public class UserService {
                         user.setEmail(email);
                         updated = true;
                     }
-                    if (displayName != null && !displayName.equals(user.getDisplayName())) {
+                    if (user.getDisplayName() == null && displayName != null) {
                         user.setDisplayName(displayName);
                         updated = true;
                     }

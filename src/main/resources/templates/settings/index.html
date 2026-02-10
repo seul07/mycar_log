@@ -13,6 +13,17 @@
             <h1 th:text="#{settings.title}">Settings</h1>
         </div>
 
+        <div class="card mb-2">
+            <ul class="settings-list">
+                <li>
+                    <a th:href="@{/settings/profile}" class="settings-item">
+                        <span th:text="#{settings.profile}">Profile</span>
+                        <span>&rarr;</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
         <p class="text-center" th:text="#{settings.select.car}">Select a car</p>
 
         <div class="car-list" th:if="${#lists.size(cars) > 0}">

@@ -11,6 +11,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.Optional;
@@ -48,6 +51,37 @@ public class SettingsController {
         model.addAttribute("carId", carId);
         model.addAttribute("currentPage", "settings");
         return "settings/car";
+    }
+
+    @GetMapping("/settings/profile")
+    public String profile(@AuthenticationPrincipal OAuth2User principal, Model model) {
+        User user = getCurrentUser(principal);
+        model.addAttribute("user", user);
+        model.addAttribute("currentPage", "settings");
+        return "settings/profile";
+    }
+
+    @PostMapping("/settings/profile")
+    public String updateProfile(@RequestParam String displayName,
+                                @AuthenticationPrincipal OAuth2User principal,
+                                RedirectAttributes redirectAttributes) {
+        User user = getCurrentUser(principal);
+
+        if (displayName == null || displayName.trim().isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "profile.nickname.required");
+            return "redirect:/settings/profile";
+        }
+
+        String trimmed = displayName.trim();
+        if (trimmed.length() > 100) {
+            redirectAttributes.addFlashAttribute("error", "profile.nickname.toolong");
+            return "redirect:/settings/profile";
+        }
+
+        user.setDisplayName(trimmed);
+        userService.updateUser(user);
+        redirectAttributes.addFlashAttribute("success", "profile.nickname.updated");
+        return "redirect:/settings/profile";
     }
 
     private User getCurrentUser(OAuth2User principal) {
