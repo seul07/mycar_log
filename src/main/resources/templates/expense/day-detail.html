@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="#{expense.date} + ' - ' + #{app.title}">Day Detail</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <th:block th:insert="~{fragments/pwa-head :: pwa-head}"></th:block>
 </head>
 <body>
     <header class="top-bar" th:replace="~{fragments/topbar :: topbar}"></header>

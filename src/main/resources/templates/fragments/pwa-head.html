@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<th:block th:fragment="pwa-head">
+    <link rel="manifest" th:href="@{/manifest.json}">
+    <meta name="theme-color" content="#3498db">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="내 차 관리">
+    <link rel="apple-touch-icon" th:href="@{/icons/icon-192.png}">
+    <link rel="icon" type="image/svg+xml" th:href="@{/icons/icon.svg}">
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js');
+            });
+        }
+    </script>
+</th:block>
+</html>
