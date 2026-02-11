@@ -1,6 +1,6 @@
 {
-  "name": "내 차 관리 - MyCar Log",
-  "short_name": "내차관리",
+  "name": "MyCar Log",
+  "short_name": "MyCar Log",
   "description": "자동차 비용을 쉽게 관리하세요",
   "start_url": "/",
   "display": "standalone",
