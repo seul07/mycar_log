@@ -38,6 +38,79 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
+tasks.register('generateIcons') {
+    description = 'Generate PNG icons for PWA from Java 2D drawing'
+    group = 'build'
+
+    doLast {
+        def iconsDir = file('src/main/resources/static/icons')
+        iconsDir.mkdirs()
+
+        [512, 192].each { size ->
+            def img = new java.awt.image.BufferedImage(size, size, java.awt.image.BufferedImage.TYPE_INT_ARGB)
+            def g = img.createGraphics()
+            g.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON)
+
+            def s = size / 512.0
+
+            // Background rounded rect
+            g.setColor(new java.awt.Color(52, 152, 219))
+            g.fillRoundRect(0, 0, size, size, (int)(112 * s), (int)(112 * s))
+
+            // Car body top (roof)
+            def roofX = [(int)(156*s), (int)(186*s), (int)(211*s), (int)(321*s), (int)(341*s), (int)(366*s), (int)(366*s), (int)(156*s)] as int[]
+            def roofY = [(int)(216*s), (int)(216*s), (int)(161*s), (int)(161*s), (int)(216*s), (int)(216*s), (int)(266*s), (int)(266*s)] as int[]
+            g.setColor(java.awt.Color.WHITE)
+            g.fillPolygon(roofX, roofY, 8)
+
+            // Front windshield
+            def w1X = [(int)(218*s), (int)(196*s), (int)(251*s), (int)(251*s)] as int[]
+            def w1Y = [(int)(174*s), (int)(221*s), (int)(221*s), (int)(174*s)] as int[]
+            g.setColor(new java.awt.Color(26, 111, 176))
+            g.fillPolygon(w1X, w1Y, 4)
+
+            // Rear windshield
+            def w2X = [(int)(264*s), (int)(264*s), (int)(318*s), (int)(304*s)] as int[]
+            def w2Y = [(int)(174*s), (int)(221*s), (int)(221*s), (int)(174*s)] as int[]
+            g.fillPolygon(w2X, w2Y, 4)
+
+            // Car body bottom
+            g.setColor(java.awt.Color.WHITE)
+            g.fillRoundRect((int)(131*s), (int)(266*s), (int)(250*s), (int)(65*s), (int)(14*s), (int)(14*s))
+
+            // Headlight (front - yellow)
+            g.setColor(new java.awt.Color(241, 196, 15))
+            g.fillRoundRect((int)(136*s), (int)(278*s), (int)(22*s), (int)(14*s), (int)(4*s), (int)(4*s))
+
+            // Taillight (rear - red)
+            g.setColor(new java.awt.Color(231, 76, 60))
+            g.fillRoundRect((int)(354*s), (int)(278*s), (int)(22*s), (int)(14*s), (int)(4*s), (int)(4*s))
+
+            // Front wheel
+            g.setColor(new java.awt.Color(26, 58, 92))
+            g.fillOval((int)(188*s - 35*s), (int)(336*s - 35*s), (int)(70*s), (int)(70*s))
+            g.setColor(new java.awt.Color(189, 195, 199))
+            g.fillOval((int)(188*s - 20*s), (int)(336*s - 20*s), (int)(40*s), (int)(40*s))
+            g.setColor(new java.awt.Color(26, 58, 92))
+            g.fillOval((int)(188*s - 8*s), (int)(336*s - 8*s), (int)(16*s), (int)(16*s))
+
+            // Rear wheel
+            g.setColor(new java.awt.Color(26, 58, 92))
+            g.fillOval((int)(324*s - 35*s), (int)(336*s - 35*s), (int)(70*s), (int)(70*s))
+            g.setColor(new java.awt.Color(189, 195, 199))
+            g.fillOval((int)(324*s - 20*s), (int)(336*s - 20*s), (int)(40*s), (int)(40*s))
+            g.setColor(new java.awt.Color(26, 58, 92))
+            g.fillOval((int)(324*s - 8*s), (int)(336*s - 8*s), (int)(16*s), (int)(16*s))
+
+            g.dispose()
+
+            def outFile = new File(iconsDir, "icon-${size}.png")
+            javax.imageio.ImageIO.write(img, 'png', outFile)
+            println "Generated: ${outFile.absolutePath}"
+        }
+    }
+}
+
 tasks.named('bootRun') {
     doFirst {
         def envFile = file('.env')

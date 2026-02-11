@@ -6,7 +6,11 @@
       "Bash(echo:*)",
       "Bash(if not exist \"D:\\\\ToyProject\\\\mycar_log\\\\mycar_log\\\\docker\" mkdir \"D:\\\\ToyProject\\\\mycar_log\\\\mycar_log\\\\docker\")",
       "Bash(ls -la \"D:\\\\ToyProject\\\\mycar_log\\\\mycar_log\\\\src\\\\main\\\\java\\\\com\\\\joy\\\\plugins\\\\mycar_log\"\" | find \"D:ToyProjectmycar_logmycar_logsrcmainjavacomjoypluginsmycar_log \" -maxdepth 1 -type d)",
-      "Bash(del \"D:\\\\ToyProject\\\\mycar_log\\\\mycar_log\\\\src\\\\main\\\\java\\\\com\\\\joy\\\\plugins\\\\mycar_log\\\\config\\\\FirebaseConfig.java\")"
+      "Bash(del \"D:\\\\ToyProject\\\\mycar_log\\\\mycar_log\\\\src\\\\main\\\\java\\\\com\\\\joy\\\\plugins\\\\mycar_log\\\\config\\\\FirebaseConfig.java\")",
+      "Bash(.\\\\gradlew generateIcons:*)",
+      "Bash(.\\\\gradlew.bat generateIcons:*)",
+      "Bash(cmd /c:*)",
+      "Bash(powershell:*)"
     ]
   }
 }
