@@ -73,6 +73,10 @@ public class ExpenseController {
         // Get mileage info for this date
         Long previousMileage = mileageService.getPreviousMileage(carId, expenseDate);
         Long todayMileage = expenseService.getMileageForDate(carId, expenseDate);
+        Long drivenDistance = null;
+        if (todayMileage != null && previousMileage != null) {
+            drivenDistance = todayMileage - previousMileage;
+        }
 
         model.addAttribute("car", car.get());
         model.addAttribute("carId", carId);
@@ -82,6 +86,7 @@ public class ExpenseController {
         model.addAttribute("totalAmount", totalAmount);
         model.addAttribute("previousMileage", previousMileage);
         model.addAttribute("todayMileage", todayMileage);
+        model.addAttribute("drivenDistance", drivenDistance);
         model.addAttribute("currentPage", "home");
         return "expense/day-detail";
     }

@@ -110,7 +110,7 @@ function getExpenseIcons(categories) {
         'OTHER': '&#128221;'
     };
 
-    const maxVisible = 5; // Show up to 5 icons
+    const maxVisible = 2; // Show up to 2 icons
     const hasMore = categories.length > maxVisible;
 
     const iconsToShow = hasMore ? categories.slice(0, maxVisible) : categories;

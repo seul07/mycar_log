@@ -371,15 +371,13 @@ body {
 }
 
 .day-icons {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0;
+    display: flex;
+    gap: 1px;
     margin-top: 1px;
-    font-size: 1.1rem;
-    justify-items: center;
+    font-size: 0.75rem;
+    justify-content: center;
     align-items: center;
     width: 100%;
-    flex: 1;
 }
 
 .day-icons span {
@@ -390,9 +388,10 @@ body {
 }
 
 .day-icons .more-indicator {
-    font-size: 0.8rem;
-    color: var(--text-light);
-    font-weight: bold;
+    font-size: 0.7rem;
+    color: var(--text-color);
+    font-weight: 900;
+    letter-spacing: -1px;
 }
 
 /* Forms */
@@ -542,6 +541,20 @@ select.form-control {
     background: linear-gradient(135deg, #2ecc71, #27ae60);
     color: white;
     padding: 1rem;
+}
+
+.driven-distance {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.driven-distance-value {
+    font-size: 1.1rem;
+    font-weight: 700;
 }
 
 .mileage-header {

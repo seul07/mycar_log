@@ -40,6 +40,10 @@
                     <button type="submit" class="btn btn-primary btn-sm" th:text="#{action.save}">Save</button>
                 </div>
             </form>
+            <div th:if="${drivenDistance != null}" class="driven-distance">
+                <span class="mileage-label" th:text="#{mileage.driven}">Driven</span>
+                <span class="driven-distance-value" th:text="${#numbers.formatInteger(drivenDistance, 1, 'COMMA')} + ' km'">0 km</span>
+            </div>
         </div>
 
         <!-- Expense List -->
