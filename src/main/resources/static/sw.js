@@ -1,4 +1,5 @@
-const CACHE_NAME = 'mycar-log-v1';
+const BUILD_TIME = '0'; // AUTO-REPLACED AT BUILD TIME
+const CACHE_NAME = 'mycar-log-' + BUILD_TIME;
 const STATIC_ASSETS = [
     '/css/style.css',
     '/js/app.js',

@@ -10,6 +10,8 @@ RUN chmod +x gradlew
 COPY build.gradle settings.gradle ./
 COPY src/ src/
 
+RUN sed -i "s/const BUILD_TIME = '0'/const BUILD_TIME = '$(date +%s)'/" src/main/resources/static/sw.js
+
 RUN ./gradlew bootJar --no-daemon -x test
 
 # Stage 2: Runtime
