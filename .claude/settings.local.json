@@ -10,7 +10,9 @@
       "Bash(.\\\\gradlew generateIcons:*)",
       "Bash(.\\\\gradlew.bat generateIcons:*)",
       "Bash(cmd /c:*)",
-      "Bash(powershell:*)"
+      "Bash(powershell:*)",
+      "Bash(JAVA_HOME=\"C:/DevTools/jdk-21.0.2\" PATH=\"C:/DevTools/jdk-21.0.2/bin:$PATH\" \"D:/ToyProject/mycar_log/mycar_log/gradlew.bat\" generateIcons:*)",
+      "Bash(cd \"D:/ToyProject/mycar_log/mycar_log\" && JAVA_HOME=\"C:/DevTools/jdk-21.0.2\" PATH=\"C:/DevTools/jdk-21.0.2/bin:$PATH\" ./gradlew.bat generateIcons 2>&1)"
     ]
   }
 }

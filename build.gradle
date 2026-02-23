@@ -46,7 +46,7 @@ tasks.register('generateIcons') {
         def iconsDir = file('src/main/resources/static/icons')
         iconsDir.mkdirs()
 
-        [512, 192].each { size ->
+        [512, 192, 180].each { size ->
             def img = new java.awt.image.BufferedImage(size, size, java.awt.image.BufferedImage.TYPE_INT_ARGB)
             def g = img.createGraphics()
             g.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON)
@@ -55,13 +55,25 @@ tasks.register('generateIcons') {
 
             // Background rounded rect
             g.setColor(new java.awt.Color(52, 152, 219))
-            g.fillRoundRect(0, 0, size, size, (int)(112 * s), (int)(112 * s))
+            g.fillRoundRect(0, 0, size, size, (int)(120 * s), (int)(120 * s))
 
-            // Car body top (roof)
-            def roofX = [(int)(156*s), (int)(186*s), (int)(211*s), (int)(321*s), (int)(341*s), (int)(366*s), (int)(366*s), (int)(156*s)] as int[]
-            def roofY = [(int)(216*s), (int)(216*s), (int)(161*s), (int)(161*s), (int)(216*s), (int)(216*s), (int)(266*s), (int)(266*s)] as int[]
+            // Car body top (rounded path with quadTo curves)
+            def roof = new java.awt.geom.Path2D.Float()
+            roof.moveTo((float)(156*s), (float)(226*s))
+            roof.quadTo((float)(156*s), (float)(216*s), (float)(166*s), (float)(216*s))
+            roof.lineTo((float)(176*s), (float)(216*s))
+            roof.curveTo((float)(192*s), (float)(216*s), (float)(203*s), (float)(179*s), (float)(207*s), (float)(170*s))
+            roof.quadTo((float)(211*s), (float)(161*s), (float)(221*s), (float)(161*s))
+            roof.lineTo((float)(311*s), (float)(161*s))
+            roof.quadTo((float)(321*s), (float)(161*s), (float)(324*s), (float)(170*s))
+            roof.curveTo((float)(333*s), (float)(197*s), (float)(340*s), (float)(216*s), (float)(351*s), (float)(216*s))
+            roof.lineTo((float)(356*s), (float)(216*s))
+            roof.quadTo((float)(366*s), (float)(216*s), (float)(366*s), (float)(226*s))
+            roof.lineTo((float)(366*s), (float)(266*s))
+            roof.lineTo((float)(156*s), (float)(266*s))
+            roof.closePath()
             g.setColor(java.awt.Color.WHITE)
-            g.fillPolygon(roofX, roofY, 8)
+            g.fill(roof)
 
             // Front windshield
             def w1X = [(int)(218*s), (int)(196*s), (int)(251*s), (int)(251*s)] as int[]
@@ -76,15 +88,15 @@ tasks.register('generateIcons') {
 
             // Car body bottom
             g.setColor(java.awt.Color.WHITE)
-            g.fillRoundRect((int)(131*s), (int)(266*s), (int)(250*s), (int)(65*s), (int)(14*s), (int)(14*s))
+            g.fillRoundRect((int)(131*s), (int)(266*s), (int)(250*s), (int)(65*s), (int)(18*s), (int)(18*s))
 
             // Headlight (front - yellow)
             g.setColor(new java.awt.Color(241, 196, 15))
-            g.fillRoundRect((int)(136*s), (int)(278*s), (int)(22*s), (int)(14*s), (int)(4*s), (int)(4*s))
+            g.fillRoundRect((int)(136*s), (int)(278*s), (int)(22*s), (int)(14*s), (int)(6*s), (int)(6*s))
 
             // Taillight (rear - red)
             g.setColor(new java.awt.Color(231, 76, 60))
-            g.fillRoundRect((int)(354*s), (int)(278*s), (int)(22*s), (int)(14*s), (int)(4*s), (int)(4*s))
+            g.fillRoundRect((int)(354*s), (int)(278*s), (int)(22*s), (int)(14*s), (int)(6*s), (int)(6*s))
 
             // Front wheel
             g.setColor(new java.awt.Color(26, 58, 92))
